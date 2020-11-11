@@ -14,6 +14,18 @@ variable "service_network_map" {
   }
 }
 
+variable "vpcaccess_ip_range" {
+  default = "10.8.0.0/28"
+}
+
+variable "vpcaccess_max_throughput" {
+  type = map
+  default = {
+    prod  = "1000"
+    stage = "300"
+  }
+}
+
 resource "google_compute_network" "default" {
   name                    = "${var.project_name}-${terraform.workspace}-network"
   auto_create_subnetworks = false
@@ -42,4 +54,14 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   network                 = google_compute_network.default.self_link
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
+}
+
+# Serverless VPC Access for Cloud Run to connect to Cloud SQL with private IP
+resource "google_vpc_access_connector" "default" {
+  project        = google_project_service.vpcaccess.project
+  name           = "${var.project_name}-${terraform.workspace}-vpcaccess"
+  network        = google_compute_network.default.name
+  region         = var.region
+  ip_cidr_range  = var.vpcaccess_ip_range
+  max_throughput = lookup(var.vpcaccess_max_throughput, terraform.workspace, "stage")
 }
