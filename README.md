@@ -13,7 +13,7 @@ We have the following requirements for the application:
 - **Durability**: Application data needs to be recoverable for up to three years in case of a disaster or user error. We will store Google Cloud SQL database exports on Google Cloud Storage using Google Cloud Scheduler.
 - **Visibility**: Logs and metrics need to be available for compliance and QA. We will use Google Cloud Logging and Cloud IAM to accomplish that.
 - **Portability**: Migration to another region of the cloud provider needs to be possible in case of a disaster. We will not demonstrate that ability in this example but Google Cloud SQL replication and Terraform configuration for a warm failover environment would enable that.
-- **Compliance**: Application data including logs should reside in a chosen region or at least in the same continent. We will configure region centrally using Terraform and for logs we could use the new regionalized log buckets.
+- **Compliance**: Application data including logs should reside in a chosen region or at least in the same continent. We will configure region centrally using Terraform and for logs we could use the new [regionalized log buckets](https://cloud.google.com/logging/docs/regionalized-logs).
 
 ## Diagram
 
@@ -33,7 +33,7 @@ We will use the python/flask version of the [Notejam](https://github.com/komarse
 - Changes app to listen on port `8080` instead of `5000`
 - Changes external resource URLs to `//` instead of insecure `http://` URLs
 
-Potential changes relevant to actual production but not for this sample app example:
+Missing changes relevant to actual production but not for this sample app example:
 
 - uWSGI or Gunicorn would be used for a production python app
 - E-mail sending would need to be fixed as we don't have SMTP on `localhost` at Cloud Run
@@ -73,7 +73,7 @@ cd notejam-infra
 
 ### Your environment
 
-Please create a `.env` file based using the provided `.env.example` as a guide and source the file.
+Please create a `.env` file based on the provided `.env.example` as a guide and source the file.
 
 ```
 cp .env.example .env
