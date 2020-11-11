@@ -8,11 +8,12 @@ We have the following requirements for the application:
 
 - **Delivery**: Large team of developers needs to be able to deliver new versions of the app continuously without downtime. We will use Google Cloud Build CI/CD pipeline integrated to GitHub to test and deploy the app automatically to Cloud Run.
 - **Environments**: Self-contained but functionally identical production, staging, testing and development environments are needed for the application development lifecycle. We will use Terraform Workspaces for that.
-- **Scalability**: Usage of the app varies greatly and it needs to be scaling up and down automatically. We will use Google Cloud Run serverless container platform to accomplish that.
+- **Scalability**: Usage of the app varies greatly and it needs to scale up and down automatically. We will use Google Cloud Run serverless container platform to accomplish that.
 - **Continuity**: Application should be available in the case of a datacenter malfunction. We will use Cloud Run and HA for Cloud SQL to host the app in multiple availability zones in a region.
-- **Durability**: Application data needs be recoverable for up to three years in case of a disaster of user error. We will use Google Cloud SQL as a database and store daily backups on Google Cloud Storage.
+- **Durability**: Application data needs to be recoverable for up to three years in case of a disaster or user error. We will store Google Cloud SQL database exports on Google Cloud Storage using Google Cloud Scheduler.
 - **Visibility**: Logs and metrics need to be available for compliance and QA. We will use Google Cloud Logging and Cloud IAM to accomplish that.
 - **Portability**: Migration to another region of the cloud provider needs to be possible in case of a disaster. We will not demonstrate that ability in this example but Google Cloud SQL replication and Terraform configuration for a warm failover environment would enable that.
+- **Compliance**: Application data including logs should reside in a chosen region or at least in the same continent. We will configure region centrally using Terraform and for logs we could use the new regionalized log buckets.
 
 ## Notejam sample web application
 
@@ -42,7 +43,7 @@ Potential changes relevant to actual production but not for this sample app exam
 - [Create a Google Cloud Platform account](https://console.cloud.google.com/freetrial)
 - [Create a Google Cloud Billing account](https://cloud.google.com/billing/docs/how-to/manage-billing-account)
 - [Install the Cloud Build GitHub app](https://cloud.google.com/cloud-build/docs/automating-builds/run-builds-on-github) (but don't connect any repositories just yet)
-- [Create a Google Group which includes your developers](https://groups.google.com/my-groups)
+- [Create a Google Group](https://groups.google.com/my-groups) which includes your developers
 - [Install Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
 
 ## Preparation
@@ -136,8 +137,8 @@ You will now setup the infrastructure for your Notejam app on Google Cloud Platf
 
 ### Install Terraform and tfswitch
 
-- [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (version `0.13.5`)
-- Or [install `tfswitch` utility to manage Terraform versions](https://tfswitch.warrensbox.com/Install/)
+- [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version `0.13.5`
+- Or [install `tfswitch`](https://tfswitch.warrensbox.com/Install/) to manage Terraform versions
 - Change to terraform dir and switch the terraform version if necessary
 ```
 cd terraform
@@ -145,6 +146,8 @@ tfswitch
 ```
 
 ### Create backend config
+
+This is needed because variables are not allowed in the backend config.
 
 ```
 cat <<EOT > backend.tf
@@ -156,8 +159,6 @@ terraform {
 }
 EOT
 ```
-
-This is because variables are not allowed in the backend config.
 
 ### Create tfvars file from previously set environment
 ```
@@ -201,13 +202,13 @@ terraform apply
 
 Terraform apply did not finish without errors? That's expected:
 
-Terraform config needs to be applied several times per environment because [there is no method to add repository connection in the Cloud Build API](https://issuetracker.google.com/issues/142550612) so some ClickOps is needed:
+Terraform config needs to be applied several times per environment because [there is no method to add repository connection in the Cloud Build API](https://issuetracker.google.com/issues/142550612) and therefore some ClickOps is needed:
 
-- Between the `terraform apply` runs, you need to connect your GitHub Notejam app repository to both of your GCP projects in the [Google Cloud Console](https://console.cloud.google.com/cloud-build/triggers/connect) manually.
+- Between the `terraform apply` runs, you need to [connect your GitHub Notejam app repository to both of your GCP projects in the Google Cloud Console](https://console.cloud.google.com/cloud-build/triggers/connect) manually.
 
 ### Triggering builds and final Terraform apply
 
-Our Terraform config does not trigger build and deployment of the Notejam app itself but deploys the Cloud Run Hello sample application initially instead. Let's trigger the build:
+Our Terraform config does not trigger build and deployment of the Notejam app itself but deploys initially the Cloud Run Hello sample application instead. Let's trigger the build:
 
 - Commit a change in your Notejam app repository and push it first to `stage` and then `prod` branch. This should trigger a build in the Cloud Build which progress and history you can follow on Cloud Console.
 
@@ -216,6 +217,6 @@ Please note that DNS propagation and SSL certificate issuance to Cloud Run can t
 - Staging: https://notejam-stage.example.com/
 - Production: https://notejam.example.com/
 
-## Finish line
+## Mission accomplished
 
 :dart: Congratulations! You are now able to provide GitOps workflow and serverless cloud native app deployments using Terraform.
