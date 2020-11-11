@@ -15,6 +15,12 @@ We have the following requirements for the application:
 - **Portability**: Migration to another region of the cloud provider needs to be possible in case of a disaster. We will not demonstrate that ability in this example but Google Cloud SQL replication and Terraform configuration for a warm failover environment would enable that.
 - **Compliance**: Application data including logs should reside in a chosen region or at least in the same continent. We will configure region centrally using Terraform and for logs we could use the new regionalized log buckets.
 
+## Diagram
+
+Broad illustration of the infrastructure we are going to deploy:
+
+![Google Cloud Platform diagram](docs/notejam-infra.svg)
+
 ## Notejam sample web application
 
 > Notejam is a unified sample web application (more than just "Hello World") implemented using different server-side frameworks.
@@ -145,6 +151,12 @@ cd terraform
 tfswitch
 ```
 
+### Terraform resources
+
+Explore the `terraform/*.tf` files to get an idea of the infrastructure we are going to be deploy with Terraform, including 3 providers and 42 resources. Visualized Terraform dependency plan:
+
+![Terraform plan](docs/terraform_plan.png)
+
 ### Create backend config
 
 This is needed because variables are not allowed in the backend config.
@@ -181,7 +193,7 @@ terraform init
 
 ### Create Terraform workspaces and apply config for each
 
-Each Terraform [workspace](https://www.terraform.io/docs/state/workspaces.html) is equivalent to app environment *and* project in GCP.
+Each Terraform [workspace](https://www.terraform.io/docs/state/workspaces.html) is equivalent to an app environment *and* a GCP project.
 
 We will create two workspaces:
 - `prod` for your production environment where the actual users are using the app
@@ -208,7 +220,7 @@ Terraform config needs to be applied several times per environment because [ther
 
 ### Triggering builds and final Terraform apply
 
-Our Terraform config does not trigger build and deployment of the Notejam app itself but deploys initially the Cloud Run Hello sample application instead. Let's trigger the build:
+Our Terraform config does not trigger the build and deployment of the Notejam app itself but instead deploys initially the Cloud Run Hello sample application. Let's trigger the build:
 
 - Commit a change in your Notejam app repository and push it first to `stage` and then `prod` branch. This should trigger a build in the Cloud Build which progress and history you can follow on Cloud Console.
 
