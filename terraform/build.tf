@@ -15,7 +15,7 @@ resource "google_cloudbuild_trigger" "deploy" {
   }
 
   build {
-    # Build image based on flask app Dockerfile, tagged both commit hash and latest
+    # Build image based on flask app Dockerfile, tagged with commit hash
     step {
       name = "gcr.io/cloud-builders/docker"
       dir  = "flask"
@@ -23,18 +23,7 @@ resource "google_cloudbuild_trigger" "deploy" {
         "build",
         "-t",
         "gcr.io/$PROJECT_ID/${var.project_name}:$COMMIT_SHA",
-        "-t",
-        "gcr.io/$PROJECT_ID/${var.project_name}:latest",
         "."
-      ]
-    }
-    # Push image to Container Registry with latest tag (used in google_cloud_run_service)
-    step {
-      name = "gcr.io/cloud-builders/docker"
-      dir  = "flask"
-      args = [
-        "push",
-        "gcr.io/$PROJECT_ID/${var.project_name}:latest"
       ]
     }
     # Push image to Container Registry with commit hash tag
