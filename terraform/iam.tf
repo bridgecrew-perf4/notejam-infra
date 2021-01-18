@@ -20,13 +20,6 @@ resource "google_service_account" "cloudrun" {
   display_name = "${var.project_name} ${terraform.workspace} Cloud Run"
 }
 
-# Allow Cloud Run to access Cloud SQL
-resource "google_project_iam_member" "cloudrun_cloudsql" {
-  project = google_project_service.iam.project
-  role    = "roles/cloudsql.client"
-  member  = "serviceAccount:${google_service_account.cloudrun.email}"
-}
-
 # Allow Cloud Build to admin Cloud Run
 resource "google_project_iam_member" "cloudsql_cloudrun" {
   project = google_project_service.iam.project
