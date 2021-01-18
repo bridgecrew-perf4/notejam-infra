@@ -71,8 +71,8 @@ resource "google_cloud_run_domain_mapping" "default" {
   project  = google_project_service.run.project
   metadata {
     namespace = google_project_service.run.project
-    annotations = {
-      "run.googleapis.com/launch-stage" : "BETA"
+    labels = {
+      "cloud.googleapis.com/location" : var.region
     }
   }
   spec {
@@ -82,7 +82,8 @@ resource "google_cloud_run_domain_mapping" "default" {
     ignore_changes = [
       metadata[0].annotations,
       metadata[0].annotations["serving.knative.dev/creator"],
-      metadata[0].annotations["serving.knative.dev/lastModifier"]
+      metadata[0].annotations["serving.knative.dev/lastModifier"],
+      metadata[0].labels["run.googleapis.com/overrideAt"],
     ]
   }
 }

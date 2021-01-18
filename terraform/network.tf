@@ -1,5 +1,5 @@
 variable "subnetwork_map" {
-  type = map
+  type = map(any)
   default = {
     prod  = "10.10.11.0/24"
     stage = "10.10.12.0/24"
@@ -7,7 +7,7 @@ variable "subnetwork_map" {
 }
 
 variable "service_network_map" {
-  type = map
+  type = map(any)
   default = {
     prod  = "10.20.0.0"
     stage = "10.30.0.0"
@@ -19,7 +19,7 @@ variable "vpcaccess_ip_range" {
 }
 
 variable "vpcaccess_max_throughput" {
-  type = map
+  type = map(any)
   default = {
     prod  = "1000"
     stage = "300"

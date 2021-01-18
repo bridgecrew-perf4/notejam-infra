@@ -1,5 +1,5 @@
 variable "sql_tier" {
-  type = map
+  type = map(any)
   default = {
     prod  = "db-g1-small"
     stage = "db-f1-micro"
