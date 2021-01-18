@@ -143,7 +143,7 @@ You will now setup the infrastructure for your Notejam app on Google Cloud Platf
 
 ### Install Terraform and tfswitch
 
-- [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version `0.13.5`
+- [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version `0.14.4`
 - Or [install `tfswitch`](https://tfswitch.warrensbox.com/Install/) to manage Terraform versions
 - Change to terraform dir and switch the terraform version if necessary
 ```
